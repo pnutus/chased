@@ -1,4 +1,4 @@
--- Jaga musen!
+-- Jagad!
 
 function load()
 	
@@ -12,9 +12,6 @@ function load()
 	chaped = love.physics.newCircleShape(chased, 15)
 	chased:setMassFromShapes()
 	
-	mouseX = -1
-	mouseY = -1
-	
 	chaserX = 300
 	chaserY = 400
 	chasedX = 400
@@ -27,7 +24,7 @@ function load()
 	hypotenuse = -1
 	hypotenusd = -1
 	
-	speed = 300
+	speed = 100
 	
 	chaserImg = love.graphics.newImage("chaser.png")
 	chasedImg = love.graphics.newImage("chased.png")
@@ -35,22 +32,29 @@ end
 
 function update(dt)
 	world:update(dt)
-
+	
+	if love.keyboard.isDown(love.key_left) then
+		chasedX = chasedX - speed * dt
+	end
+	if love.keyboard.isDown(love.key_right) then
+		chasedX = chasedX + speed * dt
+	end
+	if love.keyboard.isDown(love.key_up) then
+		chasedY = chasedY - speed * dt
+	end
+	if love.keyboard.isDown(love.key_down) then
+		chasedY = chasedY + speed * dt
+	end
+	
 	mouseX, mouseY = love.mouse.getPosition()
 	
-	deltaX = mouseX - chaserX
-	deltaY = mouseY - chaserY
-	deltdX = mouseX - chasedX
-	deltdY = mouseY - chasedY
+	deltaX = chasedX - chaserX
+	deltaY = chasedY - chaserY
 	
 	hypotenuse = (deltaY^2 + deltaX^2)^0.5
-	hypotenusd = (deltdY^2 + deltdX^2)^0.5
 	
 	chaserX = chaserX + deltaX * speed * dt / hypotenuse
 	chaserY = chaserY + deltaY * speed * dt / hypotenuse
-	
-	chasedX = chasedX - deltdX * speed * dt / hypotenusd
-	chasedY = chasedY - deltdY * speed * dt / hypotenusd
 	
 	chaser:applyForce(chaserX, chaserY)
 	chased:applyForce(chasedX, chasedY)
@@ -59,6 +63,6 @@ end
 function draw()
 	love.graphics.draw(chaserImg, chaserX, chaserY)
 	love.graphics.draw(chasedImg, chasedX, chasedY)
-	love.graphics.draw(chaserImg, chaser:getX(), chaser:getY(), chaser:getAngle())
-	love.graphics.draw(chasedImg, chased:getX(), chased:getY(), chased:getAngle())
+--	love.graphics.draw(chaserImg, chaser:getX(), chaser:getY(), chaser:getAngle())
+--	love.graphics.draw(chasedImg, chased:getX(), chased:getY(), chased:getAngle())
 end
