@@ -24,7 +24,8 @@ function load()
 	hypotenuse = -1
 	hypotenusd = -1
 	
-	speed = 100
+	chaserSpeed = 100
+	chasedSpeed = 200
 	
 	chaserImg = love.graphics.newImage("chaser.png")
 	chasedImg = love.graphics.newImage("chased.png")
@@ -34,16 +35,20 @@ function update(dt)
 	world:update(dt)
 	
 	if love.keyboard.isDown(love.key_left) then
-		chasedX = chasedX - speed * dt
+		chasedX = chasedX - chasedSpeed * dt
 	end
 	if love.keyboard.isDown(love.key_right) then
-		chasedX = chasedX + speed * dt
+		chasedX = chasedX + chasedSpeed * dt
 	end
 	if love.keyboard.isDown(love.key_up) then
-		chasedY = chasedY - speed * dt
+		chasedY = chasedY - chasedSpeed * dt
 	end
 	if love.keyboard.isDown(love.key_down) then
-		chasedY = chasedY + speed * dt
+		chasedY = chasedY + chasedSpeed * dt
+	end
+	
+	if (chasedY - chasedX) != (chasedSpeed * dt)
+		
 	end
 	
 	mouseX, mouseY = love.mouse.getPosition()
@@ -53,8 +58,8 @@ function update(dt)
 	
 	hypotenuse = (deltaY^2 + deltaX^2)^0.5
 	
-	chaserX = chaserX + deltaX * speed * dt / hypotenuse
-	chaserY = chaserY + deltaY * speed * dt / hypotenuse
+	chaserX = chaserX + deltaX * chaserSpeed * dt / hypotenuse
+	chaserY = chaserY + deltaY * chaserSpeed * dt / hypotenuse
 	
 	chaser:applyForce(chaserX, chaserY)
 	chased:applyForce(chasedX, chasedY)
