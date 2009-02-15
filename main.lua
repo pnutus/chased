@@ -1,11 +1,6 @@
 -- Chased!
 
 function load()
-	deltaX, deltaY, mouseX, mouseY = -1, -1, -1, -1
-	
-	chaserSpeed = 100
-	chasedSpeed = 200
-	
 	chaserImg = love.graphics.newImage("chaser.png")
 	chasedImg = love.graphics.newImage("chased.png")
 	
@@ -13,12 +8,11 @@ function load()
 	bigFont = love.graphics.newFont(love.default_font, 40)
 	smallFont = love.graphics.newFont(love.default_font, 7)
 	
-	restartGame()
+	restartGame("begin")
 	
-	endTime = 0
-	cheatControl = 6
-	gameState = "begin"
-	
+	deltaX, deltaY, mouseX, mouseY = -1
+	mouseDistance, endTime = 0
+
 	chaserSpeed = 100
 	chasedSpeed = 200
 end
@@ -26,7 +20,7 @@ end
 function update(dt)
 	timePassed = timePassed + dt
 	
-	if chaseDistance < 15 then
+	if chaseDistance < 30 then
 		if gameState ~= "game over" then
 			endTime = timePassed
 		end
@@ -52,7 +46,7 @@ function draw()
 		love.graphics.draw(chaserImg, chaserX, chaserY)
 		love.graphics.draw(chasedImg, chasedX, chasedY)
 		love.graphics.setFont(font)
-		love.graphics.draw("You have survived for "..math.floor(timePassed).." seconds. So far...", 10, 20)
+		love.graphics.draw("You have survived for "..math.floor(timePassed).." seconds ... so far.", 10, 20)
 	elseif gameState == "game over" then
 		love.graphics.setFont(bigFont)
 		love.graphics.draw("YOU LOSE!!!", 175, 230)
@@ -76,13 +70,14 @@ end
 function checkMouse(dt)
 	if love.mouse.isDown(love.mouse_left) then
 	  mouseX, mouseY = love.mouse.getPosition()
+	
 	  deltaX = mouseX - chasedX
 	  deltaY = mouseY - chasedY
 	  
-	  hypotenuse = (deltaY^2 + deltaX^2)^0.5 -- Calculate the distance between chaser and chased
+	  mouseDistance = (deltaY^2 + deltaX^2)^0.5 -- Calculate the distance between chased and mouse
       
-	  chasedX = chasedX + deltaX * chasedSpeed * dt / hypotenuse -- Move chaser toward chased x-
-	  chasedY = chasedY + deltaY * chasedSpeed * dt / hypotenuse -- and y-wise
+	  chasedX = chasedX + deltaX * chasedSpeed * dt / mouseDistance -- Move chased toward mouse x-
+	  chasedY = chasedY + deltaY * chasedSpeed * dt / mouseDistance -- and y-wise
   end
 end
 
@@ -110,13 +105,13 @@ end
 
 function keypressed(key)
 	if gameState == "game over" and (timePassed - endTime) > 1 then
-		restartGame()
+		restartGame("running")
 	elseif gameState == "begin" then
-		gameState = "running"
+		restartGame("running")
 	end
 	if love.keyboard.isDown(love.key_rshift) or love.keyboard.isDown(love.key_lshift) then
 		if key == love.key_r then
-			restartGame()
+			restartGame("begin")
 		end
 		if key == love.key_q then
 			if cheatControl > 5 then
@@ -132,8 +127,8 @@ function keypressed(key)
 	end
 end
 
-function restartGame()
-	gameState = "running"
+function restartGame(state)
+	gameState = state
 
 	timePassed = 0
 	cheatControl = 6
@@ -143,5 +138,5 @@ function restartGame()
 	chaserX = 600
 	chaserY = 440
 
-	chaseDistance = 16
+	chaseDistance = 31
 end
