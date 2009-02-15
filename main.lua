@@ -47,7 +47,7 @@ function update(dt)
 		chasedY = chasedY + chasedSpeed * dt
 	end
 	
-	if (chasedY - chasedX) != (chasedSpeed * dt)
+	if (chasedY - chasedX) ~= (chasedSpeed * dt) then
 		
 	end
 	
