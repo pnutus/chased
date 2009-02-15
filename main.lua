@@ -1,8 +1,7 @@
 -- Jagad!
 
 function load()
-	deltaX = -1
-	deltaY = -1
+	deltaX, deltaY, mouseX, mouseY = -1, -1, -1, -1
 	
 	chaserSpeed = 100
 	chasedSpeed = 200
@@ -26,7 +25,7 @@ function update(dt)
 		end
 		gameOver = true
 	else
-		checkArrowKeys(dt)
+		checkMouse(dt)
 		boundingBox()
 		chaseDist(dt)
 	end
@@ -60,18 +59,16 @@ function chaseDist(dt)
 	chaserY = chaserY + deltaY * chaserSpeed * dt / hypotenuse -- and y-wise
 end
 
-function checkArrowKeys(dt)
-	if love.keyboard.isDown(love.key_left) then
-		chasedX = chasedX - chasedSpeed * dt
-	end
-	if love.keyboard.isDown(love.key_right) then
-		chasedX = chasedX + chasedSpeed * dt
-	end
-	if love.keyboard.isDown(love.key_up) then
-		chasedY = chasedY - chasedSpeed * dt
-	end
-	if love.keyboard.isDown(love.key_down) then
-		chasedY = chasedY + chasedSpeed * dt
+function checkMouse(dt)
+	if love.mouse.isDown(love.mouse_left) then
+	  mouseX, mouseY = love.mouse.getPosition()
+	  deltaX = mouseX - chasedX
+	  deltaY = mouseY - chasedY
+	  
+	  hypotenuse = (deltaY^2 + deltaX^2)^0.5 -- Calculate the distance between chaser and chased
+      
+	  chasedX = chasedX + deltaX * chasedSpeed * dt / hypotenuse -- Move chaser toward chased x-
+	  chasedY = chasedY + deltaY * chasedSpeed * dt / hypotenuse -- and y-wise
 	end
 end
 
