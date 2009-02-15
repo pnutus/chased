@@ -1,6 +1,8 @@
 -- Jagad!
 
 function load()
+	endTime = 0
+	
 	deltaX = -1
 	deltaY = -1
 	
@@ -44,9 +46,6 @@ function draw()
 		love.graphics.draw(chaserImg, chaserX, chaserY)
 		love.graphics.draw(chasedImg, chasedX, chasedY)
 		love.graphics.draw("You have survived for "..math.floor(timePassed).." seconds. So far...", 10, 20)
-		
---		love.graphics.draw(chaserImg, chaser:getX(), chaser:getY(), chaser:getAngle())
---		love.graphics.draw(chasedImg, chased:getX(), chased:getY(), chased:getAngle())
 	end
 end
 
@@ -61,16 +60,16 @@ function chaseDist(dt)
 end
 
 function checkArrowKeys(dt)
-	if love.keyboard.isDown(love.key_left) then
+	if love.keyboard.isDown(love.key_left) or love.keyboard.isDown(love.key_a) then
 		chasedX = chasedX - chasedSpeed * dt
 	end
-	if love.keyboard.isDown(love.key_right) then
+	if love.keyboard.isDown(love.key_right) or love.keyboard.isDown(love.key_d) then
 		chasedX = chasedX + chasedSpeed * dt
 	end
-	if love.keyboard.isDown(love.key_up) then
+	if love.keyboard.isDown(love.key_up) or love.keyboard.isDown(love.key_w) then
 		chasedY = chasedY - chasedSpeed * dt
 	end
-	if love.keyboard.isDown(love.key_down) then
+	if love.keyboard.isDown(love.key_down) or love.keyboard.isDown(love.key_s) then
 		chasedY = chasedY + chasedSpeed * dt
 	end
 end
@@ -83,20 +82,32 @@ function boundingBox()
 end
 
 function keypressed(key)
-	if gameOver and (timePassed - endTime) >= 3 then
+	if gameOver and (timePassed - endTime) > 1 then
 		restartGame()
+	end
+	if love.keyboard.isDown(love.key_rshift) or love.keyboard.isDown(love.key_lshift) then
+		if key == love.key_r then
+			restartGame()
+		end
+		if key == love.key_q then
+			timePassed = timePassed + 100
+		end
+		
+		-- Pulls up an error, so we can restart.
+		if key == love.key_z then
+			bajs()
+		end
 	end
 end
 
 function restartGame()
 	timePassed = 0
 	gameOver = false
-	endTime = 0
 
-	chaserX = 40
-	chaserY = 65
-	chasedX = 600
-	chasedY = 440
+	chasedX = 40
+	chasedY = 65
+	chaserX = 600
+	chaserY = 440
 
 	hypotenuse = 16
 	
