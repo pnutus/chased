@@ -1,8 +1,6 @@
 -- Jagad!
 
 function load()
-	restartGame()
-	
 	deltaX = -1
 	deltaY = -1
 	
@@ -12,10 +10,11 @@ function load()
 	chaserImg = love.graphics.newImage("chaser.png")
 	chasedImg = love.graphics.newImage("chased.png")
 	
-	loseFont = love.graphics.newFont(love.default_font, 40)
 	font = love.graphics.newFont(love.default_font, 14)
+	loseFont = love.graphics.newFont(love.default_font, 40)
 	miniFont = love.graphics.newFont(love.default_font, 7)
-	love.graphics.setFont(font)
+	
+	restartGame()
 end
 
 function update(dt)
@@ -27,9 +26,9 @@ function update(dt)
 		end
 		gameOver = true
 	else
-		checkArrowKeys()
+		checkArrowKeys(dt)
 		boundingBox()
-		chaseDist()
+		chaseDist(dt)
 	end
 end
 
@@ -38,7 +37,7 @@ function draw()
 		love.graphics.setFont(loseFont)
 		love.graphics.draw("YOU LOSE!!!", 175, 230)
 		love.graphics.setFont(font)
-		love.graphics.drawf("You survived for "..math.floor(endTime).." seconds. That's not good enough for a place in the high-score list*.\nPress any key to try again.", 175, 250, 280)
+		love.graphics.drawf("You survived for "..math.floor(endTime).." seconds. That's not good enough for a place in the high-score list*.\n\nPress any key to try again.", 175, 250, 280)
 		love.graphics.setFont(miniFont)
 		love.graphics.draw("*Partly because there isn't any.", 515, 475)
 	else
@@ -51,7 +50,7 @@ function draw()
 	end
 end
 
-function chaseDist()
+function chaseDist(dt)
 	deltaX = chasedX - chaserX
 	deltaY = chasedY - chaserY
 	
@@ -61,7 +60,7 @@ function chaseDist()
 	chaserY = chaserY + deltaY * chaserSpeed * dt / hypotenuse -- and y-wise
 end
 
-function checkKeys()
+function checkArrowKeys(dt)
 	if love.keyboard.isDown(love.key_left) then
 		chasedX = chasedX - chasedSpeed * dt
 	end
@@ -84,7 +83,7 @@ function boundingBox()
 end
 
 function keypressed(key)
-	if gameOver and (timePassed - endtime) >= 10
+	if gameOver and (timePassed - endTime) >= 3 then
 		restartGame()
 	end
 end
@@ -100,4 +99,6 @@ function restartGame()
 	chasedY = 440
 
 	hypotenuse = 16
+	
+	love.graphics.setFont(font)
 end
