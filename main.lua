@@ -26,6 +26,7 @@ function update(dt)
 		gameOver = true
 	else
 		checkMouse(dt)
+		checkArrowKeys(dt)
 		boundingBox()
 		chaseDist(dt)
 	end
