@@ -49,10 +49,10 @@ function update(dt)
 		deltaX = chasedX - chaserX
 		deltaY = chasedY - chaserY
 		
-		hypotenuse = (deltaY^2 + deltaX^2)^0.5
-    	
-		chaserX = chaserX + deltaX * chaserSpeed * dt / hypotenuse
-		chaserY = chaserY + deltaY * chaserSpeed * dt / hypotenuse
+		hypotenuse = (deltaY^2 + deltaX^2)^0.5 -- Calculate the distance between chaser and chased
+
+		chaserX = chaserX + deltaX * chaserSpeed * dt / hypotenuse -- Move chaser toward chased x-
+		chaserY = chaserY + deltaY * chaserSpeed * dt / hypotenuse -- and y-wise
 		
 		chaser:applyForce(chaserX, chaserY)
 		chased:applyForce(chasedX, chasedY)
