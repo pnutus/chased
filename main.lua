@@ -10,8 +10,7 @@ function load()
 	
 	restartGame("begin")
 	
-	deltaX, deltaY, mouseX, mouseY = -1
-	mouseDistance, endTime = 0
+	endTime = 0
 
 	chaserSpeed = 100
 	chasedSpeed = 200
@@ -43,8 +42,8 @@ function draw()
 		love.graphics.setFont(smallFont)
 		love.graphics.draw("*Cheat codes can be bought at our webstore.", 470, 475)
 	elseif gameState == "running" then
-		love.graphics.draw(chaserImg, chaserX, chaserY)
-		love.graphics.draw(chasedImg, chasedX, chasedY)
+		love.graphics.draw(chaserImg, chaserPos[1], chaserPos[2])
+		love.graphics.draw(chasedImg, chasedPos[1], chasedPos[2])
 		love.graphics.setFont(font)
 		love.graphics.draw("You have survived for "..math.floor(timePassed).." seconds ... so far.", 10, 20)
 	elseif gameState == "game over" then
@@ -58,49 +57,48 @@ function draw()
 end
 
 function chaserControl(dt)
-	deltaX = chasedX - chaserX
-	deltaY = chasedY - chaserY
+	local delta = {chasedPos[1] - chaserPos[1], chasedPos[2] - chaserPos[2]}
 	
-	chaseDistance = (deltaY^2 + deltaX^2)^0.5 -- Calculate the distance between chaser and chased
+	chaseDistance = (delta[2]^2 + delta[1]^2)^0.5 -- Calculate the distance between chaser and chased
     
-	chaserX = chaserX + deltaX * chaserSpeed * dt / chaseDistance -- Move chaser toward chased x-
-	chaserY = chaserY + deltaY * chaserSpeed * dt / chaseDistance -- and y-wise
+	chaserPos[1] = chaserPos[1] + delta[1] * chaserSpeed * dt / chaseDistance -- Move chaser toward chased x-
+	chaserPos[2] = chaserPos[2] + delta[2] * chaserSpeed * dt / chaseDistance -- and y-wise
 end
 
 function checkMouse(dt)
 	if love.mouse.isDown(love.mouse_left) then
-	  mouseX, mouseY = love.mouse.getPosition()
+	  local mousePos = {0, 0} -- These two rows are kind of ugly
+	  mousePos[1], mousePos[2] = love.mouse.getPosition()
 	
-	  deltaX = mouseX - chasedX
-	  deltaY = mouseY - chasedY
+	  local delta = {mousePos[1] - chasedPos[1], mousePos[2] - chasedPos[2]}
 	  
-	  mouseDistance = (deltaY^2 + deltaX^2)^0.5 -- Calculate the distance between chased and mouse
+	  local mouseDistance = (delta[2]^2 + delta[1]^2)^0.5 -- Calculate the distance between chased and mouse
       
-	  chasedX = chasedX + deltaX * chasedSpeed * dt / mouseDistance -- Move chased toward mouse x-
-	  chasedY = chasedY + deltaY * chasedSpeed * dt / mouseDistance -- and y-wise
+	  chasedPos[1] = chasedPos[1] + delta[1] * chasedSpeed * dt / mouseDistance -- Move chased toward mouse x-
+	  chasedPos[2] = chasedPos[2] + delta[2] * chasedSpeed * dt / mouseDistance -- and y-wise
   end
 end
 
 function checkArrowKeys(dt)
 	if love.keyboard.isDown(love.key_left) or love.keyboard.isDown(love.key_a) then
-		chasedX = chasedX - chasedSpeed * dt
+		chasedPos[1] = chasedPos[1] - chasedSpeed * dt
 	end
 	if love.keyboard.isDown(love.key_right) or love.keyboard.isDown(love.key_d) then
-		chasedX = chasedX + chasedSpeed * dt
+		chasedPos[1] = chasedPos[1] + chasedSpeed * dt
 	end
 	if love.keyboard.isDown(love.key_up) or love.keyboard.isDown(love.key_w) then
-		chasedY = chasedY - chasedSpeed * dt
+		chasedPos[2] = chasedPos[2] - chasedSpeed * dt
 	end
 	if love.keyboard.isDown(love.key_down) or love.keyboard.isDown(love.key_s) then
-		chasedY = chasedY + chasedSpeed * dt
+		chasedPos[2] = chasedPos[2] + chasedSpeed * dt
 	end
 end
 
 function boundingBox()
-	if chasedX < 15 then chasedX = 15 end
-	if chasedX > (love.graphics.getWidth() - 15) then chasedX = (love.graphics.getWidth() - 15) end
-	if chasedY < 40 then chasedY = 40 end
-	if chasedY > (love.graphics.getHeight() - 15) then chasedY = (love.graphics.getHeight() - 15) end	
+	if chasedPos[1] < 15 then chasedPos[1] = 15 end
+	if chasedPos[1] > (love.graphics.getWidth() - 15) then chasedPos[1] = (love.graphics.getWidth() - 15) end
+	if chasedPos[2] < 40 then chasedPos[2] = 40 end
+	if chasedPos[2] > (love.graphics.getHeight() - 15) then chasedPos[2] = (love.graphics.getHeight() - 15) end	
 end
 
 function keypressed(key)
@@ -161,10 +159,8 @@ function restartGame(state)
 	timePassed = 0
 	cheatControl = 6
 
-	chasedX = 40
-	chasedY = 65
-	chaserX = love.graphics.getWidth() - 40
-	chaserY = love.graphics.getHeight() - 40
+	chasedPos = {40, 65}
+	chaserPos = {love.graphics.getWidth() - 40, love.graphics.getHeight() - 40}
 
 	chaseDistance = 31
 end
