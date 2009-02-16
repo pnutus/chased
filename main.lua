@@ -11,25 +11,25 @@ function load()
 	restartGame("begin")
 	
 	endTime = 0
-
-	chaserSpeed = 100
-	chasedSpeed = 200
 end
 
 function update(dt)
 	timePassed = timePassed + dt
 	
-	if chaseDistance < 30 then
-		if gameState ~= "game over" then
-			endTime = timePassed
-		end
-		gameState = "game over"
-	elseif gameState == "running" then
+	if gameState == "running" then
+		chaserSpeed = chaserSpeed + 10 * dt
+		chasedSpeed = chaserSpeed * 2
 		cheatControl = cheatControl + dt
 		checkMouse(dt)
 		checkArrowKeys(dt)
 		boundingBox()
 		chaserControl(dt)
+		if chaseDistance < 30 then
+			endTime = timePassed
+			gameState = "game over"
+		end
+	else
+		love.timer.sleep(20)
 	end
 end
 
@@ -62,20 +62,24 @@ function chaserControl(dt)
 	chaseDistance = (delta[2]^2 + delta[1]^2)^0.5 -- Calculate the distance between chaser and chased
     
 	chaserPos[1] = chaserPos[1] + delta[1] * chaserSpeed * dt / chaseDistance -- Move chaser toward chased x-
-	chaserPos[2] = chaserPos[2] + delta[2] * chaserSpeed * dt / chaseDistance -- and y-wise
+	chaserPos[2] = chaserPos[2] + delta[2] * chaserSpeed * dt / chaseDistance -- and y-wise at chaserSpeed
 end
 
 function checkMouse(dt)
 	if love.mouse.isDown(love.mouse_left) then
-	  local mousePos = {love.mouse.getPosition()}
-	
-	  local delta = {mousePos[1] - chasedPos[1], mousePos[2] - chasedPos[2]}
-	  
-	  local mouseDistance = (delta[2]^2 + delta[1]^2)^0.5 -- Calculate the distance between chased and mouse
-      
-	  chasedPos[1] = chasedPos[1] + delta[1] * chasedSpeed * dt / mouseDistance -- Move chased toward mouse x-
-	  chasedPos[2] = chasedPos[2] + delta[2] * chasedSpeed * dt / mouseDistance -- and y-wise
-  end
+		local mousePos = {love.mouse.getPosition()}
+		local delta = {mousePos[1] - chasedPos[1], mousePos[2] - chasedPos[2]}
+		
+		if (delta[1] == 0) and (delta[2] == 0) then -- mouseDistance cannot be 0 in the second equation
+			return
+		else
+			local mouseDistance = (delta[2]^2 + delta[1]^2)^0.5 -- Calculate the distance between chased and mouse
+			if mouseDistance > 2 then
+				chasedPos[1] = chasedPos[1] + delta[1] * chasedSpeed * dt / mouseDistance -- Move chased toward mouse x-
+				chasedPos[2] = chasedPos[2] + delta[2] * chasedSpeed * dt / mouseDistance -- and y-wise at chasedSpeed
+			end
+		end
+  	end
 end
 
 function checkArrowKeys(dt)
@@ -99,8 +103,8 @@ function checkArrowKeys(dt)
 	else
 		local keyDistance = (keyDir[2]^2 + keyDir[1]^2)^0.5 -- Calculate the distance between chased and the imaginary direction point
     	
-		chasedPos[1] = chasedPos[1] + keyDir[1] * chasedSpeed * dt / keyDistance -- Move chased toward hat point x-
-		chasedPos[2] = chasedPos[2] + keyDir[2] * chasedSpeed * dt / keyDistance -- and y-wise
+		chasedPos[1] = chasedPos[1] + keyDir[1] * chasedSpeed * dt / keyDistance -- Move chased toward that point x-
+		chasedPos[2] = chasedPos[2] + keyDir[2] * chasedSpeed * dt / keyDistance -- and y-wise at chasedSpeed
 	end
 end
 
@@ -173,4 +177,7 @@ function restartGame(state)
 	chaserPos = {love.graphics.getWidth() - 40, love.graphics.getHeight() - 40}
 
 	chaseDistance = 31
+	
+	chaserSpeed = 100
+	chasedSpeed = 200
 end
