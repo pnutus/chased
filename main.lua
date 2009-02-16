@@ -21,8 +21,11 @@ function update(dt)
 		chaserSpeed = chaserSpeed + 10 * dt
 		chasedSpeed = chaserSpeed * 2
 		cheatControl = cheatControl + dt
-		checkMouse(dt)
-		checkArrowKeys(dt)
+		if love.mouse.isDown(love.mouse_left) then
+			checkMouse(dt)
+		else
+			checkArrowKeys(dt)
+		end
 		boundingBox()
 		chaseCalc()
 		chaserControl(dt)
@@ -78,20 +81,18 @@ function chaserControl(dt)
 end
 
 function checkMouse(dt)
-	if love.mouse.isDown(love.mouse_left) then
-		local mousePos = {love.mouse.getPosition()}
-		local delta = {mousePos[1] - chasedPos[1], mousePos[2] - chasedPos[2]}
-		
-		if (delta[1] == 0) and (delta[2] == 0) then -- mouseDistance cannot be 0 in the second equation
-			return
-		else
-			local mouseDistance = (delta[2]^2 + delta[1]^2)^0.5 -- Calculate the distance between chased and mouse
-			if mouseDistance > 2 then
-				chasedPos[1] = chasedPos[1] + delta[1] * chasedSpeed * dt / mouseDistance -- Move chased toward mouse x-
-				chasedPos[2] = chasedPos[2] + delta[2] * chasedSpeed * dt / mouseDistance -- and y-wise at chasedSpeed
-			end
+	local mousePos = {love.mouse.getPosition()}
+	local delta = {mousePos[1] - chasedPos[1], mousePos[2] - chasedPos[2]}
+	
+	if (delta[1] == 0) and (delta[2] == 0) then -- mouseDistance cannot be 0 in the second equation
+		return
+	else
+		local mouseDistance = (delta[2]^2 + delta[1]^2)^0.5 -- Calculate the distance between chased and mouse
+		if mouseDistance > 2 then
+			chasedPos[1] = chasedPos[1] + delta[1] * chasedSpeed * dt / mouseDistance -- Move chased toward mouse x-
+			chasedPos[2] = chasedPos[2] + delta[2] * chasedSpeed * dt / mouseDistance -- and y-wise at chasedSpeed
 		end
-  	end
+	end
 end
 
 function checkArrowKeys(dt)
@@ -127,24 +128,7 @@ function boundingBox()
 	if chasedPos[2] > (love.graphics.getHeight() - 15) then chasedPos[2] = (love.graphics.getHeight() - 15) end	
 end
 
-function lapControl()
-	-- currentAngle = math.asin(chaseDelta[1]/chaseDistance)
-	-- 	
-	-- 	-- Första kvadranten
-	-- 	if chaseDelta[1] > 0 and chaseDelta[2] > 0 then
-	-- 	end
-	-- 	-- Andra kvadranten
-	-- 	if chaseDelta[1] > 0 and chaseDelta[2] < 0 then
-	-- 	angle = angle + 90
-	-- 	end
-	-- 	-- Tredje kvadranten
-	-- 	if chaseDelta[1] < 0 and chaseDelta[2] < 0 then
-	-- 		currentAngle = currentAngle - 90
-	-- 	end
-	-- 	-- Fjärde kvadranten
-	-- 	if chaseDelta[1] < 0 and chaseDelta[2] > 0 then
-	-- 	end
-	
+function lapControl()	
 	currentAngle = math.deg(math.atan2(chaseDelta[1], chaseDelta[2]))
 	
 	local diff = currentAngle - previousAngle
