@@ -39,7 +39,7 @@ function draw()
 		love.graphics.setFont(bigFont)
 		love.graphics.draw("CHASED!", 175, 180)
 		love.graphics.setFont(font)
-		love.graphics.drawf("You are a scared piece of shit. And you are being CHASED!\n\nMove with the arrow keys or W, A, S and D.\n\nAvoid the chaser at all costs*!\n\nPress any key to begin.", 175, 200, 280)
+		love.graphics.drawf("You are a scared piece of shit. And you are being CHASED!\n\nMove with the arrow keys, W, A, S and D or click the mouse in the direction you want your avatar to move.\n\nAvoid the chaser at all costs*!\n\nPress any key or click the mouse to begin.", 175, 200, 280)
 		love.graphics.setFont(smallFont)
 		love.graphics.draw("*Cheat codes can be bought at our webstore.", 470, 475)
 	elseif gameState == "running" then
@@ -51,7 +51,7 @@ function draw()
 		love.graphics.setFont(bigFont)
 		love.graphics.draw("YOU LOSE!!!", 175, 230)
 		love.graphics.setFont(font)
-		love.graphics.drawf("You survived for "..math.floor(endTime).." seconds. That's not good enough for a place in the high-score list*.\n\nPress any key to try again.", 175, 250, 280)
+		love.graphics.drawf("You survived for "..math.floor(endTime).." seconds. That's not good enough for a place in the high-score list*.\n\nPress any key or click the mouse to try again.", 175, 250, 280)
 		love.graphics.setFont(smallFont)
 		love.graphics.draw("*Partly because there isn't any.", 515, 475)
 	end
@@ -97,22 +97,17 @@ function checkArrowKeys(dt)
 end
 
 function boundingBox()
-	if chasedY < 40 then chasedY = 40 end
-	if chasedY > 465 then chasedY = 465 end
 	if chasedX < 15 then chasedX = 15 end
-	if chasedX > 625 then chasedX = 625 end
+	if chasedX > (love.graphics.getWidth() - 15) then chasedX = (love.graphics.getWidth() - 15) end
+	if chasedY < 40 then chasedY = 40 end
+	if chasedY > (love.graphics.getHeight() - 15) then chasedY = (love.graphics.getHeight() - 15) end	
 end
 
 function keypressed(key)
-	if gameState == "game over" and (timePassed - endTime) > 1 then
-		restartGame("running")
-	elseif gameState == "begin" then
-		restartGame("running")
-	end
+
+	-- Combinations with shift
 	if love.keyboard.isDown(love.key_rshift) or love.keyboard.isDown(love.key_lshift) then
-		if key == love.key_r then
-			restartGame("begin")
-		end
+		-- Shift + Q -- A cheat, only works every five seconds.
 		if key == love.key_q then
 			if cheatControl > 5 then
 				timePassed = timePassed + 100
@@ -120,10 +115,43 @@ function keypressed(key)
 			end
 		end
 		
-		-- Pulls up an error, so we can restart.
-		if key == love.key_z then
-			bajs()
+		-- Shift + R -- Hard restart, reloads code.
+		if key == love.key_r then
+			love.system.restart()
 		end
+		
+		-- Shift + Esc -- Suspends the game
+		if key == love.key_escape then
+			love.system.suspend()
+		end
+	else -- Without shift
+	
+		-- Any key -- Continues from start and game-over screens. 
+		if gameState == "game over" and (timePassed - endTime) > 1 then
+			restartGame("running")
+		elseif gameState == "begin" then
+			restartGame("running")
+		end
+		
+		-- Esc -- Exits the game.
+		if key == love.key_escape then
+			love.system.exit()
+		end
+		
+		-- Restart -- Starts from starting screen.
+		if key == love.key_r then
+			restartGame("begin")
+		end
+	end
+end
+
+function mousepressed()
+
+	-- Any button -- Continues from start and game-over screens.
+	if gameState == "game over" and (timePassed - endTime) > 1 then
+		restartGame("running")
+	elseif gameState == "begin" then
+		restartGame("running")
 	end
 end
 
@@ -135,8 +163,8 @@ function restartGame(state)
 
 	chasedX = 40
 	chasedY = 65
-	chaserX = 600
-	chaserY = 440
+	chaserX = love.graphics.getWidth() - 40
+	chaserY = love.graphics.getHeight() - 40
 
 	chaseDistance = 31
 end
