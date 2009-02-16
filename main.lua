@@ -67,8 +67,7 @@ end
 
 function checkMouse(dt)
 	if love.mouse.isDown(love.mouse_left) then
-	  local mousePos = {0, 0} -- These two rows are kind of ugly
-	  mousePos[1], mousePos[2] = love.mouse.getPosition()
+	  local mousePos = {love.mouse.getPosition()}
 	
 	  local delta = {mousePos[1] - chasedPos[1], mousePos[2] - chasedPos[2]}
 	  
@@ -80,17 +79,28 @@ function checkMouse(dt)
 end
 
 function checkArrowKeys(dt)
+	local keyDir = {0, 0}
+
 	if love.keyboard.isDown(love.key_left) or love.keyboard.isDown(love.key_a) then
-		chasedPos[1] = chasedPos[1] - chasedSpeed * dt
+		keyDir[1] = keyDir[1] - 1
 	end
 	if love.keyboard.isDown(love.key_right) or love.keyboard.isDown(love.key_d) then
-		chasedPos[1] = chasedPos[1] + chasedSpeed * dt
+		keyDir[1] = keyDir[1] + 1
 	end
 	if love.keyboard.isDown(love.key_up) or love.keyboard.isDown(love.key_w) then
-		chasedPos[2] = chasedPos[2] - chasedSpeed * dt
+		keyDir[2] = keyDir[2] - 1
 	end
 	if love.keyboard.isDown(love.key_down) or love.keyboard.isDown(love.key_s) then
-		chasedPos[2] = chasedPos[2] + chasedSpeed * dt
+		keyDir[2] = keyDir[2] + 1
+	end
+	
+	if (keyDir[1] == 0) and (keyDir[2] == 0) then -- keyDistance cannot be 0 in the second equation
+		return
+	else
+		local keyDistance = (keyDir[2]^2 + keyDir[1]^2)^0.5 -- Calculate the distance between chased and the imaginary direction point
+    	
+		chasedPos[1] = chasedPos[1] + keyDir[1] * chasedSpeed * dt / keyDistance -- Move chased toward hat point x-
+		chasedPos[2] = chasedPos[2] + keyDir[2] * chasedSpeed * dt / keyDistance -- and y-wise
 	end
 end
 
