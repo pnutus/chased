@@ -49,10 +49,11 @@ function draw()
 	elseif gameState == "game over" then
 		love.graphics.setFont(bigFont)
 		love.graphics.draw("YOU LOSE!!!", 175, 230)
+		doHighscore()
 		love.graphics.setFont(font)
 		love.graphics.drawf("You survived for "..math.floor(endTime).." seconds. That's not good enough for a place in the high-score list*.\n\nPress any key or click the mouse to try again.", 175, 250, 280)
 		love.graphics.setFont(smallFont)
-		love.graphics.draw("*Partly because there isn't any.", 515, 475)
+		love.graphics.draw("*Partly because there isn't any ... yet.", 493, 475)
 	end
 end
 
@@ -67,8 +68,7 @@ end
 
 function checkMouse(dt)
 	if love.mouse.isDown(love.mouse_left) then
-	  local mousePos = {0, 0} -- These two rows are kind of ugly
-	  mousePos[1], mousePos[2] = love.mouse.getPosition()
+	  local mousePos = {love.mouse.getPosition()}
 	
 	  local delta = {mousePos[1] - chasedPos[1], mousePos[2] - chasedPos[2]}
 	  
@@ -163,4 +163,23 @@ function restartGame(state)
 	chaserPos = {love.graphics.getWidth() - 40, love.graphics.getHeight() - 40}
 
 	chaseDistance = 31
+end
+
+function doHighscore()
+  local file = love.filesystem.newFile("highscore")
+  local handle = love.filesystem.open(file)
+  local highscoreList = {}
+  
+  for row in love.filesystem.lines(file) do
+    table.insert(highscoreList,row)
+  end
+  
+  table.insert(highscoreList, math.floor(endTime) .. "\n")
+  table.sort(highscoreList, function (a, b)
+      return string.lower(a) < string.lower(b)
+    end)
+  
+  for rows in highscoreList do
+    love.filesystem.write(file, rows)
+  end
 end
