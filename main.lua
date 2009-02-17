@@ -50,6 +50,10 @@ function draw()
 		love.graphics.draw(chaserImg, chaserPos[1], chaserPos[2])
 		love.graphics.draw(chasedImg, chasedPos[1], chasedPos[2])
 		love.graphics.setFont(runningFont)
+		timeString = math.floor(timePassed).." second"
+		if math.floor(timePassed) ~= 1 then
+			timeString = timeString.."s"
+		end
 		lapString = laps.." lap"
 		if laps ~= 1 then
 			lapString = lapString.."s"
@@ -58,7 +62,7 @@ function draw()
 		if lapDegrees ~= 1 then
 			degreeString = degreeString.."s"
 		end
-		love.graphics.draw("You have survived for "..math.floor(timePassed).." seconds ... so far. And you've run "..lapString.." and "..degreeString.." around your chaser.", 10, 20)
+		love.graphics.draw("You have survived for "..timeString.." so far. And you've run "..lapString.." and "..degreeString.." around your chaser.", 10, 20)
 		
 	elseif gameState == "game over" then
 		love.graphics.setFont(bigFont)
