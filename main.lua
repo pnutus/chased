@@ -10,8 +10,6 @@ function load()
 	smallFont = love.graphics.newFont(love.default_font, 7)
 	
 	restartGame("begin")
-	
-	endTime = 0
 end
 
 function update(dt)
@@ -46,7 +44,8 @@ function draw()
 		love.graphics.setFont(font)
 		love.graphics.drawf("You are a scared piece of shit. And you are being CHASED!\n\nMove with the arrow keys, W, A, S and D or click the mouse in the direction you want your avatar to move.\n\nAvoid the chaser at all costs*!\n\nPress any key or click the mouse to begin.", 175, 200, 280)
 		love.graphics.setFont(smallFont)
-		love.graphics.draw("*Cheat codes can be bought at our webstore.", 470, 475)	
+		love.graphics.draw("*Cheat codes can be bought at our webstore.", 470, 475)
+		
 	elseif gameState == "running" then
 		love.graphics.draw(chaserImg, chaserPos[1], chaserPos[2])
 		love.graphics.draw(chasedImg, chasedPos[1], chasedPos[2])
@@ -60,6 +59,7 @@ function draw()
 			degreeString = degreeString.."s"
 		end
 		love.graphics.draw("You have survived for "..math.floor(timePassed).." seconds ... so far. And you've run "..lapString.." and "..degreeString.." around your chaser.", 10, 20)
+		
 	elseif gameState == "game over" then
 		love.graphics.setFont(bigFont)
 		love.graphics.draw("YOU LOSE!!!", 175, 230)
@@ -197,12 +197,9 @@ function mousepressed()
 	end
 end
 
+-- Reset everything required for a restart of the game
 function restartGame(state)
 	gameState = state
-	
-	if state == "running" then
-		
-	end
 	
 	timePassed = 0
 	cheatControl = 6
@@ -214,7 +211,6 @@ function restartGame(state)
 	chaserSpeed = 100
 	chasedSpeed = 200
 	
-	laps = 0
 	previousAngle = math.deg(math.atan2(chaseDelta[1], chaseDelta[2]))
 	totalAngle = 0
 end
